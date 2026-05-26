@@ -8,6 +8,7 @@ public abstract class Actividad {
 	Date fecha;
     protected boolean aprobada;
     protected Cuenta cuentaOrigen;
+    private String estado; //"Aprobado" o "Rechazado"
 
 
 	public Actividad(double monto, Cuenta cuentaOrigen) {

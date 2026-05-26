@@ -35,6 +35,10 @@ public class Usuario {
 		
 	}
 	
+	public void actualizarTotalInvertido() { //necesita implementarse para el metodo totalinvertido de billetera
+		
+	}
+	
 	public HashMap<String, Cuenta> getCuentas() {
 		return cuentas;
 	}
@@ -62,7 +66,9 @@ public class Usuario {
 		return mail;
 	}
 	
-	
+	public double getTotalInvertido() {
+		return totalInvertido;
+	}
 
 }
 

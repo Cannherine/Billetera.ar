@@ -17,7 +17,7 @@ public class Billetera implements IBilletera {
 	@Override
 	public void registrarEmpresa(String cuit, String nombreFantasia, String telefono, String email,
 			String nombreContacto) {
-		// TODO Auto-generated method stub
+		
 		 validarParametro(cuit);
 
 		    validarParametro(nombreFantasia);
@@ -282,12 +282,9 @@ public class Billetera implements IBilletera {
 ////////////////////////////////////////////////////////////////////////////////////
 	@Override
 	public void realizarTransferencia(String cvuOrigen, String cvuDestino, double monto) {
-		// TODO Auto-generated method stub
-		
-		    // Validaniones
+		    // VALIDACIONES:
 		    validarParametro(cvuOrigen);
 		    validarParametro(cvuDestino);
-
 		    validarCuentaNOExiste(cvuOrigen);
 		    validarCuentaNOExiste(cvuDestino);
 
@@ -300,11 +297,11 @@ public class Billetera implements IBilletera {
 
 		    Cuenta cuentaDestino = cuentasPorCvu.get(cvuDestino);// obtiene la cuenta destino usando el hashmap
 
-		    // Limites para las cuentas regulares
+		    //Limites para las cuentas regulares
 		    if (cuentaDestino instanceof Regular && monto > 5_000_000) {
 		        throw new IllegalStateException("Límite de transferencia excedido.");
 		    }
-		    // Debita
+		    //Debita
 		    boolean pudoDebitar = cuentaOrigen.debitar(monto);// intenta sacar dinero de la cuenta origen
 
 
@@ -321,7 +318,7 @@ public class Billetera implements IBilletera {
 
 		    Transferencia transferencia = new Transferencia(monto, cuentaOrigen, cuentaDestino);
 
-		    // Guarda las activiades
+		    // Guarda las actividades
 		    cuentaOrigen.getActividades().add(transferencia); // agrega la transferencia al historial de la cuenta origen
 
 		    cuentaDestino.getActividades().add(transferencia); // agrega la transferencia al historial de la cuenta destino
@@ -369,9 +366,12 @@ public class Billetera implements IBilletera {
 	}
 //////////////////////////////////////////////////////////////////////////
 	@Override
-	public List<String> consultarHistorialGlobal() {
-		// TODO Auto-generated method stub
-		return null;
+	public List<String> consultarHistorialGlobal() { //Recorre el historial global, e imprime cada actividad Transferencia o Inversion
+		List<String> lista = new ArrayList<>();		// y guarda en la nueva lista su toString
+		for(Actividad actividad : this.historialCompletoDeActividades) {
+			lista.add(actividad.toString());
+		}
+		return lista;
 	}
 //////////////////////////////////////////////////////////////////////////////
 	@Override
@@ -421,8 +421,10 @@ public class Billetera implements IBilletera {
 
 	@Override
 	public double obtenerTotalInvertido(String dniUsuario) {
-		// TODO Auto-generated method stub
-		return 0;
+		//Validaciones:
+		validarUsuarioNOExiste(dniUsuario);
+		Usuario usuario = usuarios.get(dniUsuario);
+		return usuario.getTotalInvertido();
 	}
 
 	@Override

@@ -2,11 +2,12 @@ package ar.edu.ungs.billetera;
 
 import java.util.Date;
 
-abstract class Inversion extends Actividad {
+public abstract class Inversion extends Actividad {
 	//atributos heredados: fecha, monto
 		Date fechaDeConstitucion;
 		int plazo;
 		boolean admitePrecancelacion; //es necesario?
+		double totalInvertido;
 		
 	public Inversion(double monto, Cuenta cuentaOrigen) {
 		super(monto, cuentaOrigen);
