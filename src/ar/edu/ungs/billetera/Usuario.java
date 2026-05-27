@@ -36,7 +36,7 @@ public class Usuario {
 	}
 	
 	public void actualizarTotalInvertido() { //necesita implementarse para el metodo totalinvertido de billetera
-		
+		//for(Cuenta cuenta : )
 	}
 	
 	public HashMap<String, Cuenta> getCuentas() {

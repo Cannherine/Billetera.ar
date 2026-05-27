@@ -11,13 +11,13 @@ public class Regular extends Cuenta {
 	}
 
 	public boolean puedeTransferir(double monto) {
-
+		
 		return saldo >= monto;
 	}
 
 	public boolean puedeInvertir(double monto) {
 
-		return saldo >= monto;
+		return this.saldo >= monto;
 	}
 
 	public void agregarSaldo(double monto) {
@@ -27,7 +27,7 @@ public class Regular extends Cuenta {
 			throw new IllegalArgumentException("Monto inválido");
 		}
 
-		if (saldo + monto > saldoMaximo) {
+		if (super.saldo + monto > saldoMaximo) {
 
 			throw new IllegalArgumentException("La cuenta supera el saldo máximo permitido");
 		}

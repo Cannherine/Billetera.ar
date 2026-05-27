@@ -4,14 +4,18 @@ import java.util.Date;
 
 public abstract class Inversion extends Actividad {
 	//atributos heredados: fecha, monto
-		Date fechaDeConstitucion;
-		int plazo;
-		boolean admitePrecancelacion; //es necesario?
-		double totalInvertido;
-		
+	private Date fechaDeConstitucion;
+	
+	private	int plazo;
+	private	boolean admitePrecancelacion; //es necesario?
+	private	double totalInvertido;
+	private String id;
+	
+	
 	public Inversion(double monto, Cuenta cuentaOrigen) {
 		super(monto, cuentaOrigen);
-		// TODO Auto-generated constructor stub
+		
+		
 	}
 
 	

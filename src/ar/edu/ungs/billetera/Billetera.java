@@ -331,20 +331,20 @@ public class Billetera implements IBilletera {
 
 	@Override
 	public int realizarInversionRentaFija(String dni, String cvu, double monto, int plazoDias) {
-		// TODO Auto-generated method stub
+		
 		return 0;
 	}
 
 	@Override
 	public int realizarInversionDivisa(String dni, String cvu, double monto, int plazoDias, String divisa,
 			double tasa) {
-		// TODO Auto-generated method stub
+		
 		return 0;
 	}
 
 	@Override
 	public int realizarInversionLiquidez(String dni, String cvu, double monto, int plazoDias) {
-		// TODO Auto-generated method stub
+		
 		return 0;
 	}
 
@@ -423,6 +423,7 @@ public class Billetera implements IBilletera {
 	public double obtenerTotalInvertido(String dniUsuario) {
 		//Validaciones:
 		validarUsuarioNOExiste(dniUsuario);
+		
 		Usuario usuario = usuarios.get(dniUsuario);
 		return usuario.getTotalInvertido();
 	}

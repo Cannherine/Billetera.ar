@@ -4,7 +4,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class Empresa {
-	 private String cuit;
+	 	
+		private String cuit;
 
 	    private String nombreFantasia;
 
@@ -66,7 +67,6 @@ public class Empresa {
     @Override
     public String toString() {
 
-        return nombreFantasia +
-               " (" + cuit + ")";
+        return nombreFantasia + " (" + cuit + ")";
     }
 }

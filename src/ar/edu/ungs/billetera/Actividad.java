@@ -17,24 +17,27 @@ public abstract class Actividad {
 		this.cuentaOrigen =cuentaOrigen;
 		this.aprobada=true;
 	}
-	 public Date getFecha() {
-	        return fecha;
-	    }
+	
+	public abstract String getTipo();
+	
+	public Date getFecha() {
+		return fecha;
+	}
 
-	    public double getMonto() {
-	        return monto;
-	    }
+	public double getMonto() {
+		return monto;
+	}
 
-	    public Cuenta getCuentaOrigen() {
-	        return cuentaOrigen;
-	    }
+	public Cuenta getCuentaOrigen() {
+		return cuentaOrigen;
+	}
 
-	    public boolean EsAprobada() {
-	        return aprobada;
-	    }
+	public boolean EsAprobada() {
+		return aprobada;
+	}
 
 	@Override
-	public String toString() {// modoficar ewto
+	public String toString() {// falta implementar
 		return "";
 	}
 }

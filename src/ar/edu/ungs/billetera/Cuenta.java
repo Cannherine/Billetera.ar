@@ -7,7 +7,7 @@ public abstract class Cuenta {
 	protected String cvu;
 	protected String alias;
 	protected double saldo;
-	protected Usuario usuario;
+	private Usuario usuario;
 
 	protected List<Actividad> actividades;
 

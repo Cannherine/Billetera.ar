@@ -35,5 +35,12 @@ public class Transferencia 	 extends Actividad {
 
 		               (aprobada ? "Aprobado" : "Rechazado");
 		    }
+
+
+			@Override
+			public String getTipo() {
+				// TODO Auto-generated method stub
+				return null;
+			}
 		}
 
