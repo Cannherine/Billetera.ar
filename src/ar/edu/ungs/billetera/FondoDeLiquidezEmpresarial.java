@@ -12,7 +12,7 @@ public class FondoDeLiquidezEmpresarial extends Inversion{
 
 	@Override
 	public String getTipo() {
-		// TODO Auto-generated method stub
+
 		return null;
 	}
 	

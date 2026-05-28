@@ -342,7 +342,7 @@ public class Billetera implements IBilletera {
 		    historialCompletoDeActividades.add(transferencia); // agrega la transferencia al historial global 
 
 		}
-	//////////////////////////////////////////////////////////7
+	//////////////////////////////////////////////////////////
 
 	@Override
 	public int realizarInversionRentaFija(String dni, String cvu, double monto, int plazoDias) {
