@@ -1,46 +1,37 @@
 package ar.edu.ungs.billetera;
 
-public class Transferencia 	 extends Actividad {
+public class Transferencia extends Actividad {
 
-		   
-		    private Cuenta cuentaDestino;
-		    // Constructor
-		    public Transferencia(double monto,Cuenta cuentaOrigen, Cuenta cuentaDestino) {
+	private Cuenta cuentaDestino;
 
-		        super(monto, cuentaOrigen);
+	// Constructor
+	public Transferencia(double monto, Cuenta cuentaOrigen, Cuenta cuentaDestino) {
 
-		        this.cuentaDestino = cuentaDestino;
-		    }
+		super(monto, cuentaOrigen);
 
-		   
-		    public Cuenta getCuentaDestino() {
-		        return cuentaDestino;
-		    }
+		this.cuentaDestino = cuentaDestino;
+	}
 
-		  
-		    @Override
-		    public String toString() {
+	public Cuenta getCuentaDestino() {
+		return cuentaDestino;
+	}
 
-		        return "Transferencia:\n" +
-		               "fecha: " + fecha + "\n" +
-		               "origen: " +
-		               cuentaOrigen.getUsuario().getDni() +
-		               " (" + cuentaOrigen.getCvu() + ")\n" +
+	@Override
+	public String toString() {
 
-		               "destino: " +
-		               cuentaDestino.getUsuario().getDni() +
-		               " (" + cuentaDestino.getCvu() + ")\n" +
+		return "Transferencia:\n" + "fecha: " + fecha + "\n" + "origen: " + cuentaOrigen.getUsuario().getDni() + " ("
+				+ cuentaOrigen.getCvu() + ")\n" +
 
-		               "monto: " + monto + "\n" +
+				"destino: " + cuentaDestino.getUsuario().getDni() + " (" + cuentaDestino.getCvu() + ")\n" +
 
-		               (aprobada ? "Aprobado" : "Rechazado");
-		    }
+				"monto: " + monto + "\n" +
 
+				(aprobada ? "Aprobado" : "Rechazado");
+	}
 
-			@Override
-			public String getTipo() {
-				// TODO Auto-generated method stub
-				return "Transferencia";
-			}
-		}
-
+	@Override
+	public String getTipo() {
+		// TODO Auto-generated method stub
+		return "Transferencia";
+	}
+}

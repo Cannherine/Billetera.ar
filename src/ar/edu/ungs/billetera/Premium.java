@@ -20,4 +20,3 @@ public class Premium extends Cuenta {
 	}
 
 }
-

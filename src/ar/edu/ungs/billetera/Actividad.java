@@ -17,7 +17,7 @@ public abstract class Actividad {
 		this.aprobada=true;
 	}
 	
-	public abstract String getTipo();
+	public abstract String getTipo(); // forzamos que cada clase hija lo implemente
 	
 	public LocalDate getFecha() {
 		return fecha;
@@ -29,10 +29,6 @@ public abstract class Actividad {
 
 	public Cuenta getCuentaOrigen() {
 		return cuentaOrigen;
-	}
-
-	public boolean EsAprobada() {
-		return aprobada;
 	}
 
 	public abstract String toString(); // forzamos que cada clase hija lo implemente

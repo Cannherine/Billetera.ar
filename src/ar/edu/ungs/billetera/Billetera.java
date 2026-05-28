@@ -35,7 +35,7 @@ public class Billetera implements IBilletera {
 			throw new IllegalArgumentException("La empresa ya existe.");
 		}
 
-		//crear empresa 
+		// crear empresa
 
 		Empresa empresa = new Empresa(cuit, nombreFantasia, telefono, email, nombreContacto);
 
@@ -50,7 +50,7 @@ public class Billetera implements IBilletera {
 
 		validarParametro(dniAutorizado); // verifica que el dni no sea null ni vacío
 
-		validarEmpresaExiste(cuitEmpresa); // verifica que la empresa exista
+		validarEmpresaNOExiste(cuitEmpresa); // verifica que la empresa exista
 
 		// buscar emplesas
 
@@ -66,8 +66,6 @@ public class Billetera implements IBilletera {
 
 		empresa.agregarAutorizado(dniAutorizado);// agrega el dni al conjunto de autorizados
 	}
-
-	
 
 	@Override
 	public void registrarUsuario(String dni, String nombre, String telefono, String email) {
@@ -94,7 +92,7 @@ public class Billetera implements IBilletera {
 		validarParametro(dniUsuario);
 		validarParametro(alias);
 		validarUsuarioNOExiste(dniUsuario);
-		validarAliasEXISTE(alias);
+		validarAliasExiste(alias);
 
 		// busco el usuario por su dni:
 		Usuario usuario = usuarios.get(dniUsuario);
@@ -117,7 +115,7 @@ public class Billetera implements IBilletera {
 		validarParametro(alias);
 
 		validarUsuarioNOExiste(dniUsuario);
-		validarAliasEXISTE(alias);
+		validarAliasExiste(alias);
 
 		// valida minimo de deposito
 		if (depositoInicial <= Premium.depositoMinimo) {
@@ -149,9 +147,9 @@ public class Billetera implements IBilletera {
 
 		validarUsuarioNOExiste(dniUsuario);
 
-		validarAliasEXISTE(alias);
+		validarAliasExiste(alias);
 
-		validarEmpresaExiste(cuitEmpresa);
+		validarEmpresaNOExiste(cuitEmpresa); // si la empresa NO existe lanza excepcion
 
 		// buscamos los datos que necesitamos
 
@@ -192,14 +190,14 @@ public class Billetera implements IBilletera {
 		for (Cuenta cuenta : usuario.getCuentas().values()) { // for each para acceder a cada valor del hashmap
 
 			// con stringbuilder:
-			//			StringBuilder sb = new StringBuilder();				
-			//			sb.append(cuenta.getTipo());
-			//			sb.append(": ");
-			//			sb.append(cuenta.getAlias());
-			//			sb.append(" (");
-			//			sb.append(cuenta.getCvu());
-			//			sb.append(") ");
-			//			lista.add(sb.toString());
+			// StringBuilder sb = new StringBuilder();
+			// sb.append(cuenta.getTipo());
+			// sb.append(": ");
+			// sb.append(cuenta.getAlias());
+			// sb.append(" (");
+			// sb.append(cuenta.getCvu());
+			// sb.append(") ");
+			// lista.add(sb.toString());
 
 			// con +:
 			lista.add(cuenta.getTipo() + ": " + cuenta.getAlias() + " (" + cuenta.getCvu() + ") ");
@@ -228,9 +226,7 @@ public class Billetera implements IBilletera {
 
 		validarCuentaNOExiste(cvuDestino);
 
-		if (monto <= 0) {
-			throw new IllegalArgumentException("Monto inválido.");
-		}
+		validarMonto(monto);
 
 		// Busco las cuentas
 		Cuenta cuentaOrigen = cuentas.get(cvuOrigen);// obtiene la cuenta origen usando el hashmap
@@ -253,12 +249,10 @@ public class Billetera implements IBilletera {
 		cuentaDestino.acreditar(monto); // agrega dinero a la cuenta destino
 
 		// Crea la actividad:crea el objeto transferencia para guardar el movimiento
-
 		Transferencia transferencia = new Transferencia(monto, cuentaOrigen, cuentaDestino);
 
 		// Guarda las actividades
 		cuentaOrigen.getActividades().add(transferencia); // agrega la transferencia al historial de la cuenta origen
-
 		cuentaDestino.getActividades().add(transferencia); // agrega la transferencia al historial de la cuenta destino
 
 		historialCompletoDeActividades.add(transferencia); // agrega la transferencia al historial global
@@ -274,25 +268,16 @@ public class Billetera implements IBilletera {
 		validarUsuarioNOExiste(dni);
 		validarCuentaNOExiste(cvu);
 
-		if (monto <= 0) {
-			throw new IllegalArgumentException("Monto invalido");
+		validarMonto(monto);
+		validarPlazo(plazoDias);
 
-		}
-
-		if (plazoDias <= 0) {
-			throw new IllegalArgumentException("Plazo invalido");
-
-		}
 		Cuenta cuenta = cuentas.get(cvu);
 		// verificamos si el saldo es sufuciente
-		if (!cuenta.debitar(monto)) {
-			throw new IllegalArgumentException("Saldo insuficiente");
+		validarSaldoEnCuenta(cuenta, monto);
 
-		}
 		Usuario usuario = usuarios.get(dni);
 
 		// creemos la inversion
-
 		RentaFija inversion = new RentaFija(monto, cuenta, plazoDias);
 
 		// guardemos la ACtivida|d
@@ -319,31 +304,30 @@ public class Billetera implements IBilletera {
 		validarUsuarioNOExiste(dni);
 
 		validarCuentaNOExiste(cvu);
-		if (monto <= 0) {
-			throw new IllegalArgumentException("Monto invalido");
-		}
 
-		if (plazoDias <= 0) {
-			throw new IllegalArgumentException("Plazo inalido");
-		}
+		validarMonto(monto);
+
+		validarPlazo(plazoDias);
 
 		// validemos que exista la divisa
 		Utilitarios.consultarCotizacion(divisa);
 		Cuenta cuenta = cuentas.get(cvu);
 
 		// verificamos si el saldo es sufuciente
-		if (!cuenta.debitar(monto)) {
-			throw new IllegalArgumentException("Saldo insuficiente");
-		}
+		validarSaldoEnCuenta(cuenta, monto);
+
 		Usuario usuario = usuarios.get(dni);
+
 		// creamos la inverion
 		InversionDivisa inversion = new InversionDivisa(monto, cuenta, plazoDias, divisa, tasa);
+
 		// guardamos la actividad
 		cuenta.getActividades().add(inversion);
 		historialCompletoDeActividades.add(inversion);
 
 		// actualizar total invertido que es de O(1)
 		usuario.sumarTotalInvertido(monto);
+
 		// devolvemos el id único
 		return inversion.getId();
 	}
@@ -359,30 +343,25 @@ public class Billetera implements IBilletera {
 
 		validarCuentaNOExiste(cvu);
 
-		if (monto <= 0) {
-			throw new IllegalArgumentException("Monto invalido");
-		}
+		validarMonto(monto);
 
-		if (plazoDias <= 0) {
-			throw new IllegalArgumentException("Plazo invalido");
-		}
+		validarPlazo(plazoDias);
 
 		Cuenta cuenta = cuentas.get(cvu);
 
 		// solo cuentas corporativas (importante)
 		if (!(cuenta instanceof Corporativa)) {
-			throw new IllegalArgumentException("Solo las cuentas corporativas pueden invertir en Fondo de Liquidez.");
+			throw new IllegalArgumentException(
+					"Solo las cuentas Corporativas pueden invertir en Fondo de Liquidez Empresarial.");
 		}
 
-		// el monto minimo 20 millones ( restrincion)
+		// el monto minimo 20 millones (restriccion)
 		if (monto < 20_000_000) {
-			throw new IllegalArgumentException("El monto minimo es de 20.000.000");
+			throw new IllegalArgumentException("El monto mínimo es de 20.000.000");
 		}
 
 		// verificamos el saldo
-		if (!cuenta.debitar(monto)) {
-			throw new IllegalArgumentException("Saldo insuficiente");
-		}
+		validarSaldoEnCuenta(cuenta, monto);
 
 		Usuario usuario = usuarios.get(dni);
 
@@ -403,7 +382,6 @@ public class Billetera implements IBilletera {
 
 	@Override
 	public void precancelarInversion(String dni, String cvu, int idInversion) {
-		// TODO Auto-generated method stub
 		validarParametro(dni);
 		validarParametro(cvu);
 		validarUsuarioNOExiste(dni);
@@ -448,7 +426,7 @@ public class Billetera implements IBilletera {
 	public String consultarCvu(String alias) {
 		validarParametro(alias);
 		validarAliasNOExiste(alias); // si el alias no existe, lanza una excepcion.
-		// busco la cuenta
+		// busco la cuenta por su alias
 		String cvu = "";
 		for (Cuenta cuenta : cuentas.values()) {
 			if (cuenta.getAlias().equals(alias)) {
@@ -460,7 +438,7 @@ public class Billetera implements IBilletera {
 
 	@Override
 	public List<String> consultarHistorialGlobal() { // Recorre el historial global, e imprime cada actividad
-		// Transferencia o Inversion
+														// Transferencia o Inversion
 		List<String> lista = new ArrayList<>(); // y guarda en la nueva lista su toString
 		for (Actividad actividad : this.historialCompletoDeActividades) {
 			lista.add(actividad.toString());
@@ -470,7 +448,6 @@ public class Billetera implements IBilletera {
 
 	@Override
 	public List<String> consultarHistorialCuenta(String cvu) {
-		// TODO Auto-generated method stub
 
 		validarParametro(cvu);
 
@@ -536,17 +513,9 @@ public class Billetera implements IBilletera {
 		return resultado;
 	}
 
-	private void validarEmpresaExiste(String cuitEmpresa) {
-
-		if (!empresas.containsKey(cuitEmpresa)) {
-
-			throw new IllegalArgumentException("La empresa no existe.");
-		}
-	}
-
 	@Override
 	public String toString() {
-		StringBuilder sb = new StringBuilder();
+		StringBuilder sb = new StringBuilder(); // es mas eficiente que el + para concatenar tantos strings
 		sb.append("=== BILLETERA ===\n");
 
 		// foreach sobre usuarios
@@ -555,7 +524,7 @@ public class Billetera implements IBilletera {
 		}
 		return sb.toString();
 	}
-	
+
 	/////////////// VALIDACIONES///////////////////////
 	private void validarParametro(String parametro) {
 		if (parametro == null || parametro.isEmpty()) {
@@ -563,19 +532,19 @@ public class Billetera implements IBilletera {
 		}
 	}
 
-	private void validarUsuarioExiste(String dni) {// ver esto no es al reves lo qeu sale ??
+	private void validarUsuarioExiste(String dni) { // si el usuario existe entonces tira una excepcion.
 		if (usuarios.containsKey(dni)) {
 			throw new IllegalArgumentException("El usuario ya Existe.");
 		}
 	}
 
-	private void validarUsuarioNOExiste(String dni) {
+	private void validarUsuarioNOExiste(String dni) { // si el usuario no existe entonces tira una excepcion.
 		if (!usuarios.containsKey(dni)) {
 			throw new IllegalArgumentException("El usuario NO Existe.");
 		}
 	}
 
-	private void validarAliasEXISTE(String alias) {
+	private void validarAliasExiste(String alias) { // si el alias existe entonces tira una excepcion.
 		for (Cuenta cuenta : cuentas.values()) {
 			if (cuenta.getAlias().equals(alias)) {
 				throw new IllegalArgumentException("El alias ya Existe.");
@@ -583,7 +552,7 @@ public class Billetera implements IBilletera {
 		}
 	}
 
-	private void validarAliasNOExiste(String alias) {
+	private void validarAliasNOExiste(String alias) { // si el alias no existe entonces tira una excepcion.
 		for (Cuenta cuenta : cuentas.values()) {
 			if (cuenta.getAlias().equals(alias)) {
 				return; // si encontro el alias, no hace nada
@@ -595,6 +564,35 @@ public class Billetera implements IBilletera {
 	private void validarCuentaNOExiste(String cuenta) {
 		if (!cuentas.containsKey(cuenta)) {
 			throw new IllegalArgumentException("La cuenta NO existe.");
+		}
+	}
+
+	private void validarEmpresaNOExiste(String cuitEmpresa) {
+
+		if (!empresas.containsKey(cuitEmpresa)) {
+
+			throw new IllegalArgumentException("La empresa no existe.");
+		}
+	}
+
+	private void validarMonto(double monto) {
+		if (monto <= 0) {
+			throw new IllegalArgumentException("Monto inválido.");
+
+		}
+	}
+
+	private void validarPlazo(int plazo) {
+		if (plazo <= 0) {
+			throw new IllegalArgumentException("Plazo inválido.");
+
+		}
+	}
+
+	private void validarSaldoEnCuenta(Cuenta cuenta, double monto) {
+		if (!cuenta.debitar(monto)) {
+			throw new IllegalArgumentException("Saldo insuficiente.");
+
 		}
 	}
 	/////////////////////////////////////////////////
