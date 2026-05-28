@@ -102,10 +102,13 @@ public class Billetera implements IBilletera {
 	private void validarAliasNoExiste(String alias) {
 		for(Cuenta cuenta : cuentas.values()) {
 			if(! cuenta.getAlias().equals(alias) ) {
+				return ; // significa que lo encontre
+			}
+			}
 				throw new IllegalArgumentException("El alias NO existe.");
 			}
-		}
-	}
+		
+	
 	
 	private void validarCuentaNOExiste(String cuenta) {
 		if(! cuentas.containsKey(cuenta)) {
@@ -155,7 +158,7 @@ public class Billetera implements IBilletera {
 		//guarda la cuenta en la lista de cuentas
 		cuentas.put(cvu, nuevaRegular);
 		usuario.agregarCuenta(nuevaRegular);
-        
+
 		return cvu;
 	}
 	
@@ -198,6 +201,7 @@ public class Billetera implements IBilletera {
 		cuentas.put(cvu, cuenta);
 
 		usuario.agregarCuenta(cuenta);  
+
 		return cvu;
 	}
 ////////////////////////////////////////////////////////////////////////////////////////
@@ -250,6 +254,7 @@ public class Billetera implements IBilletera {
 		    cuentas.put(cvu, cuenta);
 
 		    usuario.agregarCuenta(cuenta);
+
 
 		    return cvu;	
 
@@ -347,26 +352,150 @@ public class Billetera implements IBilletera {
 	@Override
 	public int realizarInversionRentaFija(String dni, String cvu, double monto, int plazoDias) {
 		
-		return 0;
+		validarParametro(dni);
+		validarParametro(cvu);
+		
+		validarUsuarioNOExiste(dni);
+		validarUsuarioNOExiste(cvu);
+		if (monto<=0) {
+	        throw new IllegalArgumentException("Monto invalido");
+
+		}
+		
+		if (plazoDias <=0) {
+	        throw new IllegalArgumentException("Plazo invalido");
+
+		}
+		Cuenta cuenta = cuentas.get(cvu);
+		//verificamos si el saldo es sufuciente
+		if(!cuenta.debitar(monto)) {
+	        throw new IllegalArgumentException("Saldo insuficiente");
+
+		}
+		  Usuario usuario = usuarios.get(dni);
+
+	    // tasa definida al momento de crear la inversion 
+	    double tasaInteres = 0.20;
+      // creemos la inversion
+	    
+	    RentaFija inversion= new RentaFija(monto,cuenta,plazoDias,tasaInteres);
+	
+	// guardemos la ACtivida|d 
+	    cuenta.getActividades().add(inversion);
+	    historialCompletoDeActividades.add(inversion);
+
+	    // actualizar total invertido O(1)
+	    usuario.TotalInvertidoSumar(monto);
+
+	    // devolver id unico
+	    return inversion.getId();
+	
 	}
+	
 
 	@Override
 	public int realizarInversionDivisa(String dni, String cvu, double monto, int plazoDias, String divisa,
 			double tasa) {
-		
-		return 0;
+		 validarParametro(dni);
+
+		    validarParametro(cvu);
+
+		    validarParametro(divisa);
+
+		    validarUsuarioNOExiste(dni);
+
+		    validarCuentaNOExiste(cvu);
+		    if (monto <= 0) {
+		        throw new IllegalArgumentException("Monto invalido");
+		    }
+
+		    if (plazoDias <= 0) {
+		        throw new IllegalArgumentException("Plazo inalido");
+		    }
+		    
+		    //validemos que exista la divisa
+		    Utilitarios.consultarCotizacion(divisa);
+		    Cuenta cuenta = cuentas.get(cvu);
+
+		     // verificamos si el saldo es sufuciente
+		    if (!cuenta.debitar(monto)) {
+		        throw new IllegalArgumentException("Saldo insuficiente");
+		    }
+		    Usuario usuario = usuarios.get(dni);
+// creamos la inverion
+		    InversionDivisa inversion = new InversionDivisa(monto,cuenta, plazoDias,divisa,tasa);
+		    // guardamos la actividad
+		    cuenta.getActividades().add(inversion);
+		    historialCompletoDeActividades.add(inversion);
+
+		    // actualizar total invertido  que es de O(1)
+		    usuario.TotalInvertidoSumar(monto);
+		    // devolvemos el  id único
+		    return inversion.getId();
 	}
 
 	@Override
 	public int realizarInversionLiquidez(String dni, String cvu, double monto, int plazoDias) {
 		
-		return 0;
-	}
+		   validarParametro(dni);
+
+		    validarParametro(cvu);
+
+		    validarUsuarioNOExiste(dni);
+
+		    validarCuentaNOExiste(cvu);
+
+		    if (monto <= 0) {
+		        throw new IllegalArgumentException("Monto invalido");
+		    }
+
+		    if (plazoDias <= 0) {
+		        throw new IllegalArgumentException("Plazo invalido");
+		    }
+
+		    Cuenta cuenta = cuentas.get(cvu);
+
+		    // solo cuentas corporativas (importante)
+		    if (!(cuenta instanceof Corporativa)) {
+		        throw new IllegalArgumentException( "Solo las cuentas corporativas pueden invertir en Fondo de Liquidez.");
+		    }
+
+		    // el monto minimo 20 millones ( restrincion)
+		    if (monto < 20.000000) {
+		        throw new IllegalArgumentException( "El monto minimo es de 20.000.000");
+		    }
+
+		    // verificamos el saldo
+		    if (!cuenta.debitar(monto)) {
+		        throw new IllegalArgumentException("Saldo insuficiente");
+		    }
+
+		    Usuario usuario = usuarios.get(dni);
+
+		    // Se crea inversioon
+		    FondoDeLiquidezEmpresarial inversion =new FondoDeLiquidezEmpresarial( monto, cuenta, plazoDias );
+
+		    // guarda actividad
+		    cuenta.getActividades().add(inversion);
+
+		    historialCompletoDeActividades.add(inversion);
+
+		    // actualizar total invertido es de  O(1)
+		    usuario.TotalInvertidoSumar(monto);
+
+		    // va a devuelve id único
+		    return inversion.getId();
+		}
+	
 
 	@Override
 	public void precancelarInversion(String dni, String cvu, int idInversion) {
 		// TODO Auto-generated method stub
-
+validarParametro(dni);
+validarParametro(cvu);
+validarUsuarioNOExiste(dni);
+validarCuentaNOExiste(cvu);
+Cuenta cuenta = cuentas.get(cvu);
 	}
 ///////////////////////////////////////////////////////////////////////////////////
 	@Override

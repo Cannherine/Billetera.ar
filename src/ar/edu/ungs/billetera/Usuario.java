@@ -34,6 +34,13 @@ public class Usuario {
 
 		
 	}
+	public void TotalInvertidoSumar(double monto) {
+		this.totalInvertido +=monto;
+	}
+	
+	public void restarTotalInvertido(double monto) {
+	    this.totalInvertido -= monto;
+	}
 	
 	public void actualizarTotalInvertido() { //necesita implementarse para el metodo totalinvertido de billetera
 		//for(Cuenta cuenta : )

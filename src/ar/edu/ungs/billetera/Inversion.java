@@ -5,16 +5,20 @@ import java.util.Date;
 public abstract class Inversion extends Actividad {
 	//atributos heredados: fecha, monto
 	private Date fechaDeConstitucion;
-	
-	private	int plazo;
+    private static int contadorID = 1;
+
+	protected	int plazo;
 	private	boolean admitePrecancelacion; //es necesario?
 	private	double totalInvertido;
-	private String id;
+	private int Id;
 	
 	
-	public Inversion(double monto, Cuenta cuentaOrigen) {
+	public Inversion(double monto, Cuenta cuentaOrigen,int plazo,boolean admitePrecancelacion) {
 		super(monto, cuentaOrigen);
-		
+		this.Id=contadorID++;
+		this.plazo= plazo;
+        this.admitePrecancelacion = admitePrecancelacion;
+
 		
 	}
 
@@ -28,6 +32,11 @@ public abstract class Inversion extends Actividad {
 	
 	public void guardarFechaConstitucion(Date fecha) { //actualiza el atributo cuando se sepa la fecha
 		this.fechaDeConstitucion = fecha;
+	}
+
+
+	public int getId() {
+		return Id;
 	}
 	
 }
