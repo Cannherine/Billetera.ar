@@ -40,7 +40,7 @@ public class Transferencia 	 extends Actividad {
 			@Override
 			public String getTipo() {
 				// TODO Auto-generated method stub
-				return null;
+				return "Transferencia";
 			}
 		}
 

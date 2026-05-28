@@ -1,26 +1,25 @@
 package ar.edu.ungs.billetera;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 public abstract class Actividad {
 
 	double monto;
-	Date fecha;
+	LocalDate fecha;
     protected boolean aprobada;
     protected Cuenta cuentaOrigen;
-    private String estado; //"Aprobado" o "Rechazado"
 
 
 	public Actividad(double monto, Cuenta cuentaOrigen) {
 		this.monto = monto;
-		this.fecha = new Date ();
+		this.fecha = Utilitarios.hoy();
 		this.cuentaOrigen =cuentaOrigen;
 		this.aprobada=true;
 	}
 	
 	public abstract String getTipo();
 	
-	public Date getFecha() {
+	public LocalDate getFecha() {
 		return fecha;
 	}
 
@@ -36,8 +35,6 @@ public abstract class Actividad {
 		return aprobada;
 	}
 
-	@Override
-	public String toString() {// falta implementar
-		return "";
-	}
+	public abstract String toString(); // forzamos que cada clase hija lo implemente
+
 }

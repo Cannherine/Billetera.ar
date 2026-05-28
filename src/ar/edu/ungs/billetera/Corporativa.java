@@ -1,9 +1,7 @@
 package ar.edu.ungs.billetera;
 
 public class Corporativa extends Cuenta {
-	//private String cuit;
-	private boolean autorizada; // para que operar en nombre de la empresa asociada
-	//private String empresaAsociada; //su cuit
+
     private Empresa empresa;
 
 	public Corporativa(String cvu, String alias, Usuario usuario, Empresa empresa) {
@@ -17,12 +15,12 @@ public class Corporativa extends Cuenta {
 	}
 	
 	public boolean puedeInvertir() {
-		return false;
+		return true;
 	}
 	
 	@Override
-	public String toString() {// esto hay que cambiar 
-		return "";
+	public String toString() {
+	    return "Corporativa: " + alias + " (" + cvu + ")";
 	}
 
 	@Override

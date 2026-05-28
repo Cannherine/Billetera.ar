@@ -2,19 +2,24 @@ package ar.edu.ungs.billetera;
 
 public class Regular extends Cuenta {
 	// ATRIBUTOS
-	private static final double saldoMaximo = 5000000; //??
+	private static final double saldoMaximo = 5000000; // ??
 
 	// FUNCIONES
-	public Regular(String cvu, String alias, Usuario usuario) { // es necesario tener el parametro usuario? 													
+	public Regular(String cvu, String alias, Usuario usuario) { // es necesario tener el parametro usuario?
 		super(cvu, alias, usuario);
-		
+
 	}
-	public void acreditar() {
-		
+
+	@Override
+	public void acreditar(double monto) {
+		if (saldo + monto > saldoMaximo) {
+			throw new IllegalStateException("Límite de saldo excedido.");
+		}
+		super.acreditar(monto);
 	}
-	
+
 	public boolean puedeTransferir(double monto) {
-		
+
 		return saldo >= monto;
 	}
 
@@ -23,20 +28,6 @@ public class Regular extends Cuenta {
 		return this.saldo >= monto;
 	}
 
-	public void agregarSaldo(double monto) {
-
-		if (monto <= 0) {
-
-			throw new IllegalArgumentException("Monto inválido.");
-		}
-
-		if (super.saldo + monto > saldoMaximo) {
-
-			throw new IllegalArgumentException("La cuenta supera el saldo máximo permitido");
-		}
-
-		acreditar(monto);
-	}
 
 	@Override
 	public String toString() {
@@ -46,7 +37,7 @@ public class Regular extends Cuenta {
 
 	@Override
 	public String getTipo() {
-		
+
 		return "Regular";
 	}
 }

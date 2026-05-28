@@ -13,7 +13,7 @@ public class Usuario {
 	private String mail;
 	private double totalInvertido; 
 	private HashMap<String, Cuenta> cuentas = new HashMap<String, Cuenta>(); //Key: cvu, Value:Cuenta
-	private List<String> cuentasCvu = new ArrayList<>();
+	
 	
 	//Constructor
 	public Usuario (String dni, String nombre, String telefono, String email) {
@@ -29,24 +29,25 @@ public class Usuario {
 	public void agregarCuenta(Cuenta nueva) { 
 		if (nueva!=null) { //verifico que exista la cuenta
 			cuentas.put(nueva.getCvu(), nueva ); // va a guaradar deltro del hashmap la cuenta
-			cuentasCvu.add(nueva.getCvu());
+			
 		}
 
 		
 	}
-	
-	public void actualizarTotalInvertido() { //necesita implementarse para el metodo totalinvertido de billetera
-		//for(Cuenta cuenta : )
+	public void sumarTotalInvertido(double monto) {
+		this.totalInvertido += monto;
 	}
 	
+	public void restarTotalInvertido(double monto) {
+	    this.totalInvertido -= monto;
+	}
+	
+		
 	public HashMap<String, Cuenta> getCuentas() {
 		return cuentas;
 	}
 	
-	public List<String> getCuentasCvu() {
-		return cuentasCvu;
-	}
-	
+		
 	public String getDni() {
 		return dni;
 	}
@@ -68,6 +69,19 @@ public class Usuario {
 	
 	public double getTotalInvertido() {
 		return totalInvertido;
+	}
+	
+	@Override
+	public String toString() {
+	    StringBuilder sb = new StringBuilder();
+	    sb.append("Usuario: ").append(nombre).append(" (DNI: ").append(dni).append(")\n");
+	    sb.append("  Total invertido: $").append(totalInvertido).append("\n");
+	    sb.append("  Cuentas:\n");
+
+	    for (Cuenta cuenta : cuentas.values()) {
+	        sb.append("    ").append(cuenta.toString()).append("\n");
+	    }
+	    return sb.toString();
 	}
 
 }
