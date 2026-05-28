@@ -22,7 +22,6 @@ public abstract class Cuenta {
 		this.saldo = 0;
 		this.actividades = new ArrayList<>();
 		this.volumenTransacciones = 0;
-
 	}
 
 	// Metodos

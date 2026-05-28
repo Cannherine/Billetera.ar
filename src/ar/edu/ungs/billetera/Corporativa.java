@@ -6,7 +6,7 @@ public class Corporativa extends Cuenta {
 	//private String empresaAsociada; //su cuit
     private Empresa empresa;
 
-	public Corporativa(String cvu, String alias, Usuario usuario, Empresa empresa, double saldo) {
+	public Corporativa(String cvu, String alias, Usuario usuario, Empresa empresa) {
 		super(cvu, alias, usuario);
 		this.empresa =empresa;
 				

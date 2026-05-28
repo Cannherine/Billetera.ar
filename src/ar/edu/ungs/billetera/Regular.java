@@ -9,7 +9,10 @@ public class Regular extends Cuenta {
 		super(cvu, alias, usuario);
 		
 	}
-
+	public void acreditar() {
+		
+	}
+	
 	public boolean puedeTransferir(double monto) {
 		
 		return saldo >= monto;
@@ -24,7 +27,7 @@ public class Regular extends Cuenta {
 
 		if (monto <= 0) {
 
-			throw new IllegalArgumentException("Monto inválido");
+			throw new IllegalArgumentException("Monto inválido.");
 		}
 
 		if (super.saldo + monto > saldoMaximo) {

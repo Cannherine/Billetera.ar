@@ -8,17 +8,20 @@ import java.util.HashMap;
 public class Billetera implements IBilletera {
 	
 	//ATRIBUTOS
-	private HashMap<String, Usuario> usuarios = new HashMap<>(); 		//indice secundario: es necesario?
-	private HashMap<String, Cuenta> cuentasPorCvu = new HashMap<>();	//tener en cuenta que cada cuenta nueva
-	private HashMap<String, Cuenta> cuentasPorAlias = new HashMap<>();	//debe agregarse a cada map.. 
-	private List<Actividad> historialCompletoDeActividades = new ArrayList<>();// Historial global del sistema.
+	private HashMap<String, Usuario> usuarios = new HashMap<>(); //clave:dni, valor: Usuario		
+	
+	private HashMap<String, Cuenta> cuentas = new HashMap<>();	//clave: cvu, valor: Cuenta
+	
+	private List<Actividad> historialCompletoDeActividades = new ArrayList<>(); //Historial global del sistema.
+	
 	private HashMap<String, Empresa> empresas = new HashMap<>();//Empresas registradas
-	/////////////////////////////////////////////////////////////////////////////////////////
+	
+	
 	@Override
 	public void registrarEmpresa(String cuit, String nombreFantasia, String telefono, String email,
 			String nombreContacto) {
 		
-		 validarParametro(cuit);
+		 	validarParametro(cuit);
 
 		    validarParametro(nombreFantasia);
 
@@ -46,7 +49,6 @@ public class Billetera implements IBilletera {
 ///////////////////////////////////////////////////////////////////////////////////////////
 	@Override
 	public void agregarPersonaAutorizada(String cuitEmpresa, String dniAutorizado) {
-		// TODO Auto-generated method stub
 		//validaciones
 		validarParametro(cuitEmpresa);// verifica que el cuit no sea null ni vacío
 
@@ -70,7 +72,7 @@ public class Billetera implements IBilletera {
 	    empresa.agregarAutorizado(dniAutorizado);// agrega el dni al conjunto de autorizados
 	}
 
-	//////////////////////////////////////////////////
+	///////////////VALIDACIONES///////////////////////
 	private void validarParametro(String parametro) {
 		if (parametro == null  || parametro.isEmpty()) {
 			throw new IllegalArgumentException("Parámetro '" + parametro +"' inválido.");
@@ -89,18 +91,28 @@ public class Billetera implements IBilletera {
 		}
 	}
 	
-	private void validarAlias(String alias) {
-		if (cuentasPorAlias.containsKey(alias)) {
-			throw new IllegalArgumentException("El alias ya existe.");
+	private void validarAliasEXISTE(String alias) {
+		for(Cuenta cuenta : cuentas.values()) {
+			if(cuenta.getAlias().equals(alias) ) {
+				throw new IllegalArgumentException("El alias ya Existe.");
+			}
+		}
+	}
+	
+	private void validarAliasNoExiste(String alias) {
+		for(Cuenta cuenta : cuentas.values()) {
+			if(! cuenta.getAlias().equals(alias) ) {
+				throw new IllegalArgumentException("El alias NO existe.");
+			}
 		}
 	}
 	
 	private void validarCuentaNOExiste(String cuenta) {
-		if(! cuentasPorCvu.containsKey(cuenta)) {
+		if(! cuentas.containsKey(cuenta)) {
 			throw new IllegalArgumentException("La cuenta NO existe.");
 		}
 	}
-	/////////////////////////////////////
+	/////////////////////////////////////////////////
 	
 	@Override
 	public void registrarUsuario(String dni, String nombre, String telefono, String email) {
@@ -127,22 +139,21 @@ public class Billetera implements IBilletera {
 		validarParametro(dniUsuario); 
 		validarParametro(alias);  
 		validarUsuarioNOExiste(dniUsuario);
-		validarAlias(alias);
+		validarAliasEXISTE(alias);
 		
 		//busco el usuario por su dni:
 		Usuario usuario = usuarios.get(dniUsuario);
 		
 		// genero un cvu random:
 		String cvu = generadorCvu();
-		while(cuentasPorCvu.containsKey(cvu)) { 	//Genera un cvu nuevo en caso de que ya exista,
+		while(cuentas.containsKey(cvu)) { 	//Genera un cvu nuevo en caso de que ya exista,
 			cvu = generadorCvu();					//hasta que sea un cvu unico y distinto. 
 		}
 		
 		//crea la cuenta:
 		Regular nuevaRegular = new Regular(cvu, alias, usuario);
-		//guarda la cuenta en las listas
-		cuentasPorAlias.put(alias, nuevaRegular);
-		cuentasPorCvu.put(cvu, nuevaRegular);
+		//guarda la cuenta en la lista de cuentas
+		cuentas.put(cvu, nuevaRegular);
 		usuario.agregarCuenta(nuevaRegular);
         
 		return cvu;
@@ -164,30 +175,30 @@ public class Billetera implements IBilletera {
 
 	@Override
 	public String crearCuentaPremium(String dniUsuario, String alias, double depositoInicial) {
-		// TODO Auto-generated method stub
-		  validarParametro(dniUsuario);
-		    validarParametro(alias);
 
-		    validarUsuarioNOExiste(dniUsuario);
-		    validarAlias(alias);
-		    
-// valida minimo de deposito
-		    if (depositoInicial <= Premium.DEPOSITO_MINIMO) {
-		        throw new IllegalArgumentException("Depósito inicial insuficiente.");
-		    }
+		validarParametro(dniUsuario);
+		validarParametro(alias);
 
-		    Usuario usuario = usuarios.get(dniUsuario);
+		validarUsuarioNOExiste(dniUsuario);
+		validarAliasEXISTE(alias);
 
-			String cvu = generadorCvu(); 
-//crea la cuenta premium
-		    Premium cuenta = new Premium(cvu, alias, usuario);
-// deposita dinero icial
-		    cuenta.acreditar(depositoInicial);
-//registra la cuenta
-		    cuentasPorCvu.put(cvu, cuenta);
-		    cuentasPorAlias.put(alias, cuenta);
-		    usuario.agregarCuenta(cuenta);  
-		    return cvu;
+		// valida minimo de deposito
+		if (depositoInicial <= Premium.depositoMinimo) {
+			throw new IllegalArgumentException("Depósito inicial insuficiente.");
+		}
+
+		Usuario usuario = usuarios.get(dniUsuario);
+
+		String cvu = generadorCvu(); 
+		//crea la cuenta premium
+		Premium cuenta = new Premium(cvu, alias, usuario);
+		// deposita dinero icial
+		cuenta.acreditar(depositoInicial);
+		//registra la cuenta
+		cuentas.put(cvu, cuenta);
+
+		usuario.agregarCuenta(cuenta);  
+		return cvu;
 	}
 ////////////////////////////////////////////////////////////////////////////////////////
 	@Override
@@ -200,12 +211,12 @@ public class Billetera implements IBilletera {
 
 		    validarUsuarioNOExiste(dniUsuario);
 
-		    validarAlias(alias);
+		    validarAliasEXISTE(alias);
 
 		    validarEmpresaExiste(cuitEmpresa);
 
 
-		    // buscamos loas datos que necesitamos
+		    // buscamos los datos que necesitamos
 
 		    Usuario usuario = usuarios.get(dniUsuario);
 
@@ -224,7 +235,7 @@ public class Billetera implements IBilletera {
 
 		    String cvu = generadorCvu();
 
-		    while (cuentasPorCvu.containsKey(cvu)) {
+		    while (cuentas.containsKey(cvu)) {
 
 		        cvu = generadorCvu();
 		    }
@@ -236,9 +247,7 @@ public class Billetera implements IBilletera {
 
 		    // guardamos
 
-		    cuentasPorCvu.put(cvu, cuenta);
-
-		    cuentasPorAlias.put(alias, cuenta);
+		    cuentas.put(cvu, cuenta);
 
 		    usuario.agregarCuenta(cuenta);
 
@@ -276,7 +285,9 @@ public class Billetera implements IBilletera {
 	@Override
 	public double obtenerSaldoDisponible(String cvu) {
 		validarCuentaNOExiste(cvu); //lanza excepcion si la cuenta no existe.
-		Cuenta cuenta = cuentasPorCvu.get(cvu); //guardo la cuenta.
+		
+		Cuenta cuenta = cuentas.get(cvu); //guardo la cuenta.
+		
 		return cuenta.getSaldo(); //devuelvo su atributo saldo.
 	}
 ////////////////////////////////////////////////////////////////////////////////////
@@ -284,8 +295,12 @@ public class Billetera implements IBilletera {
 	public void realizarTransferencia(String cvuOrigen, String cvuDestino, double monto) {
 		    // VALIDACIONES:
 		    validarParametro(cvuOrigen);
+		    
 		    validarParametro(cvuDestino);
+		    Cuenta regular;
+		    
 		    validarCuentaNOExiste(cvuOrigen);
+		    
 		    validarCuentaNOExiste(cvuDestino);
 
 		    if (monto <= 0) {
@@ -293,9 +308,9 @@ public class Billetera implements IBilletera {
 		    }
 
 		    // Busco las cuentas
-		    Cuenta cuentaOrigen = cuentasPorCvu.get(cvuOrigen);// obtiene la cuenta origen usando el hashmap
+		    Cuenta cuentaOrigen = cuentas.get(cvuOrigen);// obtiene la cuenta origen usando el hashmap
 
-		    Cuenta cuentaDestino = cuentasPorCvu.get(cvuDestino);// obtiene la cuenta destino usando el hashmap
+		    Cuenta cuentaDestino = cuentas.get(cvuDestino);// obtiene la cuenta destino usando el hashmap
 
 		    //Limites para las cuentas regulares
 		    if (cuentaDestino instanceof Regular && monto > 5_000_000) {
@@ -357,12 +372,15 @@ public class Billetera implements IBilletera {
 	@Override
 	public String consultarCvu(String alias) {
 		validarParametro(alias);
-
-	    if (!cuentasPorAlias.containsKey(alias)) { // SI EL ALIAS NO EXISTE  
-	        throw new IllegalArgumentException("El alias no existe.");
-	    }
-		Cuenta cuenta = cuentasPorAlias.get(alias);
-		return cuenta.getCvu();
+		validarAliasNoExiste(alias); //si el alias no existe, lanza una excepcion.
+		//busco la cuenta
+		String cvu = "";
+		for(Cuenta cuenta : cuentas.values()) {
+			if(cuenta.getAlias().equals(alias)) {
+				cvu = cuenta.getCvu();
+			}
+		}
+		return cvu;
 	}
 //////////////////////////////////////////////////////////////////////////
 	@Override
@@ -382,7 +400,7 @@ public class Billetera implements IBilletera {
 
 	    validarCuentaNOExiste(cvu);
 
-	    Cuenta cuenta = cuentasPorCvu.get(cvu);
+	    Cuenta cuenta = cuentas.get(cvu);
 
 	    List<String> historial = new ArrayList<>();// se crea una lista vacia y aca se van a guardar los mov.
 
@@ -398,7 +416,6 @@ public class Billetera implements IBilletera {
 
 	@Override
 	public List<String> consultarHistorialUsuario(String dniUsuario) {
-		// TODO Auto-generated method stub
 		// Validar que el usuario exista
 	    validarUsuarioNOExiste(dniUsuario);
 
@@ -420,7 +437,7 @@ public class Billetera implements IBilletera {
 	}
 
 	@Override
-	public double obtenerTotalInvertido(String dniUsuario) {
+	public double obtenerTotalInvertido(String dniUsuario) { //falta implementar en subclases
 		//Validaciones:
 		validarUsuarioNOExiste(dniUsuario);
 		
@@ -430,7 +447,6 @@ public class Billetera implements IBilletera {
 
 	@Override
 	public List<String> cuentasConMayorVolumen(int cantidadTop) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 ////////////////////////////////////////7
