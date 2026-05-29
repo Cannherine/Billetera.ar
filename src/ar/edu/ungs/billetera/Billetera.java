@@ -1,6 +1,7 @@
 package ar.edu.ungs.billetera;
 
 import java.util.List;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -293,8 +294,7 @@ public class Billetera implements IBilletera {
 	}
 
 	@Override
-	public int realizarInversionDivisa(String dni, String cvu, double monto, int plazoDias, String divisa,
-			double tasa) {
+	public int realizarInversionDivisa(String dni, String cvu, double monto, int plazoDias, String divisa, double tasa) {
 		validarParametro(dni);
 
 		validarParametro(cvu);
@@ -596,4 +596,43 @@ public class Billetera implements IBilletera {
 		}
 	}
 	/////////////////////////////////////////////////
+
+	@Override
+	public void procesarInversionesQueVencenHoy() {
+	    LocalDate hoy = Utilitarios.hoy();
+
+	    // recorre todos los usuarios del sistema
+	    for (Usuario usuario : usuarios.values()) {
+
+	        // recorre todas las cuentas de cada usuario
+	        for (Cuenta cuenta : usuario.getCuentas().values()) {
+
+	            // usamos Iterator porque necesitamos eliminar mientras recorremos
+	            Iterator<Actividad> it = cuenta.getActividades().iterator();
+	            while (it.hasNext()) {
+	                Actividad a = it.next();
+
+	                if (a instanceof Inversion) {		//para no perder datos hacemos cast
+	                    Inversion inv = (Inversion) a; //ya que una inversion es mas "grande" que una actividad
+
+	                    //calculamos la fecha de vencimiento sumando el plazo a la fecha de constitucion. plusDay suma dias a una fecha
+	                    LocalDate vencimiento = inv.getFechaConstitucion().plusDays(inv.getPlazo());
+
+	                    if (vencimiento.equals(hoy)) {
+	                        // acreditamos el monto total segun el tipo de inversion
+	                        // el polimorfismo llama al metodo correcto
+	                        cuenta.acreditar(inv.calcularMontoVencimiento());
+
+	                        // actualizamos el total invertido del usuario
+	                        usuario.restarTotalInvertido(inv.getMonto());
+
+	                        // eliminamos la inversion de la lista de actividades
+	                        it.remove();
+	                    }
+	                }
+	            }
+	        }
+	    }
+	}
+
 }

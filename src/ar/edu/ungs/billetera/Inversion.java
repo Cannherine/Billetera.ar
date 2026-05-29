@@ -18,11 +18,15 @@ public abstract class Inversion extends Actividad {
 		this.fechaDeConstitucion = Utilitarios.hoy(); // usa Utilitarios para definir la fecha
 	}
 
-	public abstract double calcularResultado(); // este metodo tiene un comportamiento unico en cada clase hija
+	public abstract double calcularResultado(); // este metodo tiene un comportamiento unico en cada clase hija: calcula los intereses de la inversion
 
 	
 	public double calcularMontoPrecancelacion() {	 // comportamiento por defecto: paraa RentaFija
 	    return monto + calcularResultado() / 2;		// devuelve el capital mas la mitad de los intereses
+	}
+	
+	public double calcularMontoVencimiento() {	//comportamiento por defecto: aplica a RentaFija y FondoDeLiquidez
+	    return monto + calcularResultado();		// devuelve el capital + los intereses completos
 	}
 	
 	public LocalDate getFechaConstitucion() {

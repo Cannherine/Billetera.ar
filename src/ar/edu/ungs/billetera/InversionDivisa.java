@@ -20,7 +20,7 @@ public class InversionDivisa extends Inversion {
 		double cotizacionActual = Utilitarios.consultarCotizacion(divisa); // cotizacion al momento del calculo
 		double divisasEquivalente = monto / cotizacionInicial; // cuantas divisas se compraron originalmente
 		long dias = Utilitarios.hoy().toEpochDay() - getFechaConstitucion().toEpochDay();
-		double interesesEnDivisas = divisasEquivalente * (tasa / 365) * dias; // intereses acumulados en divisa
+		double interesesEnDivisas = divisasEquivalente * (tasa / 365) * dias; // intereses acumulados en divisa (formula dada en los test)
 
 		// retorna el valor total en pesos: (divisas + intereses) * cotizacion actuall
 		return (divisasEquivalente + interesesEnDivisas) * cotizacionActual;
@@ -41,11 +41,17 @@ public class InversionDivisa extends Inversion {
 		double interesesEnDivisas = divisasEquivalente * (tasa / 365) * dias;
 
 		// como es precancelacion, solo la mitad de los intereses
-		// el capital (divisasEquivalente) se devuelve completo, convertido al valor
-		// actual
+		// el capital (divisasEquivalente) se devuelve completo, convertido al valor actual
 		return (divisasEquivalente + interesesEnDivisas / 2) * cotizacionActual;
 	}
-
+	
+	@Override
+	public double calcularMontoVencimiento() {
+	    // calcularResultado() incluye el capital convertido a cotizacion actual
+	    // por lo que solo se devuelve ese valor directamente
+	    return calcularResultado();
+	}
+	
 	public String getDivisa() {
 		return divisa;
 	}

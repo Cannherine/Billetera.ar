@@ -227,5 +227,5 @@ public interface IBilletera {
 	 * Utilitarios.
 	 * 
 	 */
-	// void procesarInversionesQueVencenHoy();
+	void procesarInversionesQueVencenHoy();
 }
